@@ -24,12 +24,29 @@ async function sendFile() {
             .then(function () {
                 // Access the data
                 var data = range.values;
+                downloadCSV(data);
                 // Handle the data (e.g., convert it to a downloadable format)
             });
     }).catch(function (error) {
         console.log(error);
     });
     
+}
+
+function downloadCSV(data) {
+    var csvContent = "data:text/csv;charset=utf-8,";
+
+    data.forEach(function (row) {
+        var rowString = row.join(",");
+        csvContent += rowString + "\n";
+    });
+
+    var encodedUri = encodeURI(csvContent);
+    var link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "excel_data.csv");
+    document.body.appendChild(link);
+    link.click();
 }
 
 
