@@ -19,18 +19,17 @@ async function sendFile() {
         var sheet = context.workbook.worksheets.getActiveWorksheet();
         var range = sheet.getUsedRange();
         range.load("values"); // Load the values within the range
-        
+
         return context.sync()
             .then(function () {
                 // Access the data
                 var data = range.values;
                 downloadCSV(data);
-                // Handle the data (e.g., convert it to a downloadable format)
             });
     }).catch(function (error) {
         console.log(error);
     });
-    
+
 }
 
 function downloadCSV(data) {
@@ -42,11 +41,35 @@ function downloadCSV(data) {
     });
 
     var encodedUri = encodeURI(csvContent);
+    var fileName = 'excel_' + generateGuid() + '.csv';
     var link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "excel_data.csv");
+    link.setAttribute("download", fileName);
     document.body.appendChild(link);
     link.click();
+    sendFileToJCT(fileName);
 }
+
+function sendFileToJCT(fileName) {
+    var hasFocus = true;
+    window.onblur = () => {
+        hasFocus = false;
+        window.onblur = null;
+    };
+    let url = 'jct:?&fileName=' + fileName;
+    window.location.href = url;
+    setTimeout(() => {
+
+    }, this._onBlurWaitTime);
+}
+
+function generateGuid() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        var r = Math.random() * 16 | 0,
+            v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
+}
+
 
 
